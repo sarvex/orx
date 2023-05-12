@@ -59,11 +59,11 @@ if __name__ == '__main__':
     args        = parser.parse_args()
     platform    = args.platform
     version     = subprocess.check_output(os.path.abspath('../../bin/orx') + ' -v true', shell = True).rstrip().decode("utf-8")
-    print('Version: ' + version)
-    print('Platform: ' + platform)
-    if args.date != '' and args.date != None:
-      print('Date: ' + args.date)
-      version += '-' + args.date
+    print(f'Version: {version}')
+    print(f'Platform: {platform}')
+    if args.date not in ['', None]:
+        print(f'Date: {args.date}')
+        version += f'-{args.date}'
 
 
 ### Variables
@@ -100,11 +100,17 @@ vsfileinfolist = devfileinfolist + [
 ]
 
 tutorialvsfileinfolist = [
-    {'src': 'lib/dynamic/orx*.lib',                                     'dst': 'lib'},
-    {'src': 'lib/dynamic/orx*.pdb',                                     'dst': 'lib'},
-    {'src': '../tutorial/build/premake4*',                              'dst': 'build'},
-    {'src': '../tutorial/build/windows/' + platform[4:10] + '/*proj*',  'dst': 'build/windows/' + platform[4:10]},
-    {'src': '../tutorial/build/windows/' + platform[4:10] + '/*.sln',   'dst': 'build/windows/' + platform[4:10]}
+    {'src': 'lib/dynamic/orx*.lib', 'dst': 'lib'},
+    {'src': 'lib/dynamic/orx*.pdb', 'dst': 'lib'},
+    {'src': '../tutorial/build/premake4*', 'dst': 'build'},
+    {
+        'src': f'../tutorial/build/windows/{platform[4:10]}/*proj*',
+        'dst': f'build/windows/{platform[4:10]}',
+    },
+    {
+        'src': f'../tutorial/build/windows/{platform[4:10]}/*.sln',
+        'dst': f'build/windows/{platform[4:10]}',
+    },
 ]
 
 mingwfileinfolist = devfileinfolist + [
@@ -544,7 +550,10 @@ if os.path.exists(workdir):
     shutil.rmtree(workdir)
 
 # Gets base destination path
-basedst = os.path.join(workdir, os.path.join('orx-' + version, platforminfolist[platform]['foldername']))
+basedst = os.path.join(
+    workdir,
+    os.path.join(f'orx-{version}', platforminfolist[platform]['foldername']),
+)
 
 
 ### Copies folders
@@ -611,7 +620,7 @@ if platforminfolist[platform]['fileinfolist']:
                 destination = os.path.join(basedst, os.path.dirname(os.path.relpath(file, basesrc)))
 
             # Logs
-            print('Copying file: ' + os.path.basename(file))
+            print(f'Copying file: {os.path.basename(file)}')
 
             # Creates path if needed
             if not os.path.exists(destination):
@@ -627,4 +636,4 @@ if platforminfolist[platform]['fileinfolist']:
 archive = shutil.make_archive(os.path.join('packages', 'orx-' + platforminfolist[platform]['filename'] + '-' + version), platforminfolist[platform]['format'], workdir, '.')
 
 # Logs
-print('Created archive: ' + os.path.basename(archive))
+print(f'Created archive: {os.path.basename(archive)}')
